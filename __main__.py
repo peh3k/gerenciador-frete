@@ -76,14 +76,14 @@ class App(customtkinter.CTk):
     def cadastro_transportadora(self):
         self.delete_pages()
 
-        nome = customtkinter.CTkEntry(self.main_frame,
+        self.nome = customtkinter.CTkEntry(self.main_frame,
                                       placeholder_text="Nome",
                                       width=140,
                                       height=25,
                                       border_width=1,
                                       corner_radius=1)
 
-        peso_inicial = customtkinter.CTkEntry(self.main_frame,
+        self.peso_inicial = customtkinter.CTkEntry(self.main_frame,
                                               placeholder_text="Peso Inicial",
                                               width=85,
                                               height=25,
@@ -91,110 +91,110 @@ class App(customtkinter.CTk):
                                               corner_radius=1,
                                               )
 
-        peso_final = customtkinter.CTkEntry(self.main_frame,
+        self.peso_final = customtkinter.CTkEntry(self.main_frame,
                                             placeholder_text="Peso Final",
                                             width=85,
                                             height=25,
                                             border_width=1,
                                             corner_radius=1)
 
-        cep_inicial = customtkinter.CTkEntry(self.main_frame,
+        self.cep_inicial = customtkinter.CTkEntry(self.main_frame,
                                              placeholder_text="Cep Inicial",
                                              width=85,
                                              height=25,
                                              border_width=1,
                                              corner_radius=1)
 
-        cep_final = customtkinter.CTkEntry(self.main_frame,
+        self.cep_final = customtkinter.CTkEntry(self.main_frame,
                                            placeholder_text="Cep Final",
                                            width=85,
                                            height=25,
                                            border_width=1,
                                            corner_radius=1)
-        prazo = customtkinter.CTkEntry(self.main_frame,
+        self.prazo = customtkinter.CTkEntry(self.main_frame,
                                        placeholder_text="Prazo",
                                        width=85,
                                        height=25,
                                        border_width=1,
                                        corner_radius=1)
 
-        estado = customtkinter.CTkEntry(self.main_frame,
+        self.estado = customtkinter.CTkEntry(self.main_frame,
                                         placeholder_text="Estado",
                                         width=85,
                                         height=25,
                                         border_width=1,
                                         corner_radius=1)
 
-        cidade = customtkinter.CTkEntry(self.main_frame,
+        self.cidade = customtkinter.CTkEntry(self.main_frame,
                                         placeholder_text="Cidade",
                                         width=85,
                                         height=25,
                                         border_width=1,
                                         corner_radius=1)
 
-        regiao = customtkinter.CTkEntry(self.main_frame,
+        self.regiao = customtkinter.CTkEntry(self.main_frame,
                                         placeholder_text="Região",
                                         width=85,
                                         height=25,
                                         border_width=1,
                                         corner_radius=1)
 
-        valor_frete = customtkinter.CTkEntry(self.main_frame,
+        self.valor_frete = customtkinter.CTkEntry(self.main_frame,
                                              placeholder_text="Valor Frete",
                                              width=85,
                                              height=25,
                                              border_width=1,
                                              corner_radius=1)
 
-        frete_min = customtkinter.CTkEntry(self.main_frame,
+        self.frete_min = customtkinter.CTkEntry(self.main_frame,
                                            placeholder_text="Frete Mínimo",
                                            width=85,
                                            height=25,
                                            border_width=1,
                                            corner_radius=1)
 
-        tac = customtkinter.CTkEntry(self.main_frame,
+        self.tac = customtkinter.CTkEntry(self.main_frame,
                                      placeholder_text="Tac",
                                      width=85,
                                      height=25,
                                      border_width=1,
                                      corner_radius=1)
 
-        gris = customtkinter.CTkEntry(self.main_frame,
+        self.gris = customtkinter.CTkEntry(self.main_frame,
                                       placeholder_text="Gris",
                                       width=85,
                                       height=25,
                                       border_width=1,
                                       corner_radius=1)
 
-        advalorem = customtkinter.CTkEntry(self.main_frame,
+        self.advalorem = customtkinter.CTkEntry(self.main_frame,
                                            placeholder_text="Advalorem",
                                            width=85,
                                            height=25,
                                            border_width=1,
                                            corner_radius=1)
 
-        pedagio = customtkinter.CTkEntry(self.main_frame,
+        self.pedagio = customtkinter.CTkEntry(self.main_frame,
                                          placeholder_text="Pedágio",
                                          width=85,
                                          height=25,
                                          border_width=1,
                                          corner_radius=1)
-        tas = customtkinter.CTkEntry(self.main_frame,
+        self.tas = customtkinter.CTkEntry(self.main_frame,
                                      placeholder_text="Tas",
                                      width=85,
                                      height=25,
                                      border_width=1,
                                      corner_radius=1)
 
-        icms = customtkinter.CTkEntry(self.main_frame,
+        self.icms = customtkinter.CTkEntry(self.main_frame,
                                       placeholder_text="Icms",
                                       width=85,
                                       height=25,
                                       border_width=1,
                                       corner_radius=1)
 
-        outros = customtkinter.CTkEntry(self.main_frame,
+        self.outros = customtkinter.CTkEntry(self.main_frame,
                                         placeholder_text="Outros",
                                         width=140,
                                         height=25,
@@ -312,28 +312,31 @@ class App(customtkinter.CTk):
         label_icms.grid(row=4, column=4, padx=10)
         label_outros.grid(row=5, column=4, padx=10)
 
-        nome.grid(row=0, column=1, pady=20)
-        peso_inicial.grid(row=1, column=1, pady=20)
-        peso_final.grid(row=2, column=1, pady=20)
-        cep_inicial.grid(row=3, column=1, pady=20)
-        cep_final.grid(row=4, column=1, pady=20)
-        prazo.grid(row=5, column=1, pady=20)
-        estado.grid(row=0, column=3, pady=20)
-        cidade.grid(row=1, column=3, pady=20)
-        regiao.grid(row=2, column=3, pady=20)
-        valor_frete.grid(row=3, column=3, pady=20)
-        frete_min.grid(row=4, column=3, pady=20)
-        tac.grid(row=5, column=3, pady=20)
-        gris.grid(row=0, column=5, pady=20)
-        advalorem.grid(row=1, column=5, pady=20)
-        pedagio.grid(row=2, column=5, pady=20)
-        tas.grid(row=3, column=5, pady=20)
-        icms.grid(row=4, column=5, pady=20)
-        outros.grid(row=5, column=5, pady=20)
+        self.nome.grid(row=0, column=1, pady=20)
+        self.peso_inicial.grid(row=1, column=1, pady=20)
+        self.peso_final.grid(row=2, column=1, pady=20)
+        self.cep_inicial.grid(row=3, column=1, pady=20)
+        self.cep_final.grid(row=4, column=1, pady=20)
+        self.prazo.grid(row=5, column=1, pady=20)
+        self.estado.grid(row=0, column=3, pady=20)
+        self.cidade.grid(row=1, column=3, pady=20)
+        self.regiao.grid(row=2, column=3, pady=20)
+        self.valor_frete.grid(row=3, column=3, pady=20)
+        self.frete_min.grid(row=4, column=3, pady=20)
+        self.tac.grid(row=5, column=3, pady=20)
+        self.gris.grid(row=0, column=5, pady=20)
+        self.advalorem.grid(row=1, column=5, pady=20)
+        self.pedagio.grid(row=2, column=5, pady=20)
+        self.tas.grid(row=3, column=5, pady=20)
+        self.icms.grid(row=4, column=5, pady=20)
+        self.outros.grid(row=5, column=5, pady=20)
 
         button_cadastrar = customtkinter.CTkButton(self.main_frame, text="Cadastrar", corner_radius=7,
-                                                   height=30,  width=100, fg_color="#3d9336", hover_color="#51bc48")
+                                                   height=30,  width=100, fg_color="#3d9336", hover_color="#51bc48", command=self.cadastrar_transportadora)
         button_cadastrar.grid(row=6, column=5, pady=20)
+
+    def cadastrar_transportadora(self):
+        print(self.nome.get())
 
     def delete_pages(self):
         for frame in self.main_frame.winfo_children():
