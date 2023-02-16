@@ -1,14 +1,17 @@
 from tkinter import *
+from tkinter import filedialog
 
+# Cria a janela
 root = Tk()
 
-entry1 = Entry(root)
-entry1.pack()
+# Função para abrir o gerenciador de arquivos
+def open_file():
+    file_path = filedialog.askopenfilename()
+    print(file_path)
 
-entry2 = Entry(root)
-entry2.pack()
+# Cria o botão e adiciona-o à janela
+button = Button(root, text="Abrir arquivo", command=open_file)
+button.pack()
 
-# Define o foco do teclado no segundo campo de entrada
-entry2.focus()
-
+# Inicia o loop principal da GUI
 root.mainloop()

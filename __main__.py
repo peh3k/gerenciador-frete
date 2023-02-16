@@ -42,10 +42,35 @@ class CadastroFail(customtkinter.CTkToplevel):
 
 
 class App(customtkinter.CTk):
+
+    def get_all_inputs(self, get=False):
+        if get:
+            all_inputs = [child.get() for child in self.main_frame.winfo_children(
+            ) if isinstance(child, customtkinter.CTkEntry)]
+        else:
+            all_inputs = [child for child in self.main_frame.winfo_children(
+            ) if isinstance(child, customtkinter.CTkEntry)]
+        return all_inputs
+
+    def convert_json(self, *ignore):
+        all_inputs = self.get_all_inputs(get=True)
+        padrao_dados = [key for key in DbLink(
+        ).PADRAO_DADOS if key not in ignore]
+        data_json = {}
+        for i in range(len(all_inputs)):
+            data_json[padrao_dados[i]] = all_inputs[i]
+
+        return data_json
+
+    def clear_all_entries(self):
+        for child in self.main_frame.winfo_children():
+            if isinstance(child, customtkinter.CTkEntry):
+                child.delete(0, tk.END)
+
     def __init__(self):
         super().__init__()
         customtkinter.set_appearance_mode("dark")
-        self.title("minimal example app")
+        self.title("Calculadora de Frete")
         self.geometry("900x550")
         self.minsize(700, 300)
         self.maxsize(900, 500)
@@ -70,91 +95,58 @@ class App(customtkinter.CTk):
 
         label_transp = customtkinter.CTkLabel(
             self.painel, text="Transportadora", height=45)
-        label_transp.pack()
 
         cadastrar_transp = customtkinter.CTkButton(self.painel, text="Cadastrar", corner_radius=0, height=60,
                                                    fg_color="#333333", hover_color="#272727", anchor="w", image=truck_image, command=self.cadastro_transportadora)
-        cadastrar_transp.pack()
 
         editar_transp = customtkinter.CTkButton(self.painel, text="Editar", corner_radius=0,
-                                                height=60, fg_color="#333333", hover_color="#272727", anchor="w", command=self.editar_transportadora, image=pencil_image)
-        editar_transp.pack()
+                                                height=60, fg_color="#333333", hover_color="#272727", anchor="w", command=self.EditarTransportadoraScreen, image=pencil_image)
 
         visualizar_transp = customtkinter.CTkButton(
             self.painel, text="Visualizar", corner_radius=0, height=50, fg_color="#333333", hover_color="#272727", image=eye_image, anchor="w")
-        visualizar_transp.pack()
 
         produto_label = customtkinter.CTkLabel(
             self.painel, text="Produto", height=35)
-        produto_label.pack()
 
         cadastrar_produto = customtkinter.CTkButton(
             self.painel, text="Cadastrar", corner_radius=0, height=50, fg_color="#333333", hover_color="#272727", image=bag_image, anchor="w")
-        cadastrar_produto.pack()
 
         editar_produto = customtkinter.CTkButton(self.painel, text="Editar", corner_radius=0,
                                                  height=50, fg_color="#333333", hover_color="#272727", image=pencil_image, anchor="w")
-        editar_produto.pack()
 
         visualizar_produto = customtkinter.CTkButton(
             self.painel, text="Visualizar", corner_radius=0, height=50, fg_color="#333333", hover_color="#272727", image=eye_image, anchor="w")
-        visualizar_produto.pack()
 
-        frete_label = customtkinter.CTkLabel(
-            self.painel, text="Frete", height=35)
-        frete_label.pack()
-        frete_label = customtkinter.CTkLabel(
-            self.painel, text="Frete", height=35)
-        frete_label.pack()
-        frete_label = customtkinter.CTkLabel(
-            self.painel, text="Frete", height=35)
-        frete_label.pack()
+        label_transp.pack()
+        cadastrar_transp.pack()
+        editar_transp.pack()
+        visualizar_transp.pack()
+        produto_label.pack()
+        cadastrar_produto.pack()
+        editar_produto.pack()
+        visualizar_produto.pack()
 
         self.main_frame = customtkinter.CTkFrame(
             self, width=700, height=450, fg_color='#313131')
         self.main_frame.grid(row=0, column=1, padx=30, pady=20, ipadx=10)
 
-    def convert_json(self, *ignore):
-        all_inputs = [child.get() for child in self.main_frame.winfo_children(
-        ) if isinstance(child, customtkinter.CTkEntry)]
-        padrao_dados = [key for key in DbLink(
-        ).PADRAO_DADOS if key not in ignore]
-        data_json = {}
-        for i in range(len(all_inputs)):
-            data_json[padrao_dados[i]] = all_inputs[i]
-
-        return data_json
-
-    def clear_all_entries(self):
-        for child in self.main_frame.winfo_children():
-            if isinstance(child, customtkinter.CTkEntry):
-                child.delete(0, tk.END)
-
-    def editar_transportadora(self):
+    def EditarTransportadoraScreen(self):
         self.delete_pages()
 
         def optionmenu_callback(choice):
             self.clear_all_entries()
-
             self.choice = choice
-            dados = get_db('Transportadora', find_name=choice)
-            self.peso_inicial_.insert(0, dados['peso inicial'])
-            self.peso_final_.insert(0, dados['peso final'])
-            self.cep_inicial_.insert(0, dados['cep inicial'])
-            self.cep_final_.insert(0, dados['cep final'])
-            self.prazo_.insert(0, dados['prazo'])
-            self.estado_.insert(0, dados['estado'])
-            self.cidade_.insert(0, dados['cidade'])
-            self.regiao_.insert(0, dados['regiao'])
-            self.valor_frete_.insert(0, dados['valor frete'])
-            self.frete_min_.insert(0, dados['frete min'])
-            self.tac_.insert(0, dados['tac'])
-            self.gris_.insert(0, dados['gris'])
-            self.advalorem_.insert(0, dados['advalorem'])
-            self.pedagio_.insert(0, dados['pedagio'])
-            self.tas_.insert(0, dados['tas'])
-            self.icms_.insert(0, dados['icms'])
-            self.outros_.insert(0, dados['outros'])
+            padrao_dados, json_dados = DbLink().PADRAO_DADOS, get_db(DbLink().PATHS['1'])[
+                get_db(DbLink().PATHS['1'], find_key_by_name=self.choice)]
+            for i in padrao_dados:
+                padrao_dados[i] = json_dados[i]
+            ordem_dados = [
+                [item for chave, item in padrao_dados.items() if chave not in [
+                    'ID', 'nome']],
+                [i for i in self.get_all_inputs()]
+            ]
+            for i in range(len(ordem_dados[1])):
+                ordem_dados[1][i].insert(0, ordem_dados[0][i])
 
         self.nome_ = customtkinter.CTkOptionMenu(self.main_frame,
                                                  values=get_db(
@@ -662,56 +654,23 @@ class App(customtkinter.CTk):
         file_path = filedialog.askopenfilename(
             filetypes=[("Arquivos de excel", "*.xlsx")])
 
-        dados = get_excel_rows(file_path)
+        dados, data_json, padrao_dados = get_excel_rows(
+            file_path), {}, [key for key in DbLink().PADRAO_DADOS.keys()]
 
         for lista in dados:
-
-            post_db('Transportadora', {
-                "ID": lista[0],
-                "nome": lista[1],
-                "peso inicial": lista[2],
-                "peso final": lista[3],
-                "cep inicial": lista[4],
-                "cep final": lista[5],
-                "prazo": lista[6],
-                "estado": lista[7],
-                "cidade": lista[8],
-                "regiao": lista[9],
-                "valor frete": lista[10],
-                "frete min": lista[11],
-                "tac": lista[12],
-                "gris": lista[13],
-                "advalorem": lista[14],
-                "pedagio": lista[15],
-                "tas": lista[16],
-                "icms": lista[17],
-                "outros": lista[18],
-            })
+            for i in range(len(lista)):
+                data_json[padrao_dados[i]] = lista[i]
+            post_db(DbLink().PATHS['1'], data_json)
 
     def cadastrar_transportadora(self):
 
         try:
-            post_db('Transportadora', {
-                "ID": get_db('Transportadora', last=True),
-                "nome": self.nome.get(),
-                "peso inicial": self.peso_inicial.get(),
-                "peso final": self.peso_final.get(),
-                "cep inicial": self.cep_inicial.get(),
-                "cep final": self.cep_final.get(),
-                "prazo": self.prazo.get(),
-                "estado": self.estado.get(),
-                "cidade": self.cidade.get(),
-                "regiao": self.regiao.get(),
-                "valor frete": self.valor_frete.get(),
-                "frete min": self.frete_min.get(),
-                "tac": self.tac.get(),
-                "gris": self.gris.get(),
-                "advalorem": self.advalorem.get(),
-                "pedagio": self.pedagio.get(),
-                "tas": self.tas.get(),
-                "icms": self.icms.get(),
-                "outros": self.outros.get(),
-            })
+            all_entries, padrao_dados, data_json = self.get_all_inputs(
+                get=True), [key for key in DbLink().PADRAO_DADOS.keys()], {}
+            for i in range(len(all_entries)):
+                data_json[padrao_dados[i+1]] = all_entries[i]
+            data_json['ID'] = get_db(DbLink().PATHS['1'], last=True)
+            post_db(DbLink().PATHS['1'], data_json)
 
             self.clear_all_entries()
 
