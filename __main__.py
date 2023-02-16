@@ -4,6 +4,35 @@ from PIL import ImageTk, Image
 from Functions import *
 from tkinter import END
 from tkinter import filedialog
+choice = []
+
+
+class DeleterTransportadora(customtkinter.CTkToplevel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.geometry("300x180")
+        self.title("Aviso")
+        self.label = customtkinter.CTkLabel(
+            self, text="DELETAR TRANSPORTADORA?")
+        self.label.pack(pady=20)
+
+        yes_button = customtkinter.CTkButton(self, text="Sim", corner_radius=7, width=70,
+                                             height=30, fg_color="#009900", hover_color="#008000",
+                                             command=self.delete_transportadora)
+        no_button = customtkinter.CTkButton(self, text="Não", corner_radius=7, width=70,
+                                            height=30, fg_color="#ff1a1a", hover_color="#ff0000",
+                                            command=self.fechar_janela)
+        yes_button.pack(side='left', padx=40)
+        no_button.pack(side='right', padx=40)
+
+    def delete_transportadora(self):
+        key = get_db(DbLink().PATHS['1'], find_key_by_name=choice[-1])
+        delete_db(DbLink().PATHS['1']+'/'+key)
+
+        self.destroy()
+
+    def fechar_janela(self):
+        self.destroy()
 
 
 class CadastroSucess(customtkinter.CTkToplevel):
@@ -15,8 +44,8 @@ class CadastroSucess(customtkinter.CTkToplevel):
             self, text="Cadastrado com Sucesso!")
         self.label.pack(padx=20, pady=20)
 
-        ok_button = customtkinter.CTkButton(self, text="OK", corner_radius=7, width=30,
-                                            height=10, fg_color="green", hover_color="#272727", anchor="w",
+        ok_button = customtkinter.CTkButton(self, text="OK", corner_radius=7, width=70,
+                                            height=30, fg_color="#df8110", hover_color="#ce770f",
                                             command=self.fechar_janela)
         ok_button.pack(padx=5, pady=5)
 
@@ -32,8 +61,8 @@ class CadastroFail(customtkinter.CTkToplevel):
         self.label = customtkinter.CTkLabel(self, text="Erro Inesperado!")
         self.label.pack(padx=20, pady=20)
 
-        ok_button = customtkinter.CTkButton(self, text="OK", corner_radius=7, width=30,
-                                            height=10, fg_color="green", hover_color="#272727", anchor="w",
+        ok_button = customtkinter.CTkButton(self, text="OK", corner_radius=7, width=70,
+                                            height=30, fg_color="#df8110", hover_color="#ce770f",
                                             command=self.fechar_janela)
         ok_button.pack(padx=5, pady=5)
 
@@ -71,12 +100,13 @@ class App(customtkinter.CTk):
         super().__init__()
         customtkinter.set_appearance_mode("dark")
         self.title("Calculadora de Frete")
-        self.geometry("900x550")
+        self.geometry("900x700")
         self.minsize(700, 300)
-        self.maxsize(900, 500)
+        self.maxsize(900, 570)
 
         self.cadastro_sucess = None
         self.cadastro_fail = None
+        self.deletar_screen = None
 
         truck_image = ImageTk.PhotoImage(Image.open(
             "images/truck.png").resize((20, 20)), Image.ANTIALIAS)
@@ -90,7 +120,11 @@ class App(customtkinter.CTk):
         bag_image = ImageTk.PhotoImage(Image.open(
             "images/bag.png").resize((20, 20)), Image.ANTIALIAS)
 
-        self.painel = customtkinter.CTkFrame(self, height=550, width=180)
+        self.trash_image = ImageTk.PhotoImage(Image.open(
+            "images/trash.png").resize((15, 15)), Image.ANTIALIAS)
+
+        self.painel = customtkinter.CTkFrame(
+            self, height=550, width=180, fg_color="#262527")
         self.painel.grid(row=0, column=0)
 
         label_transp = customtkinter.CTkLabel(
@@ -117,6 +151,12 @@ class App(customtkinter.CTk):
         visualizar_produto = customtkinter.CTkButton(
             self.painel, text="Visualizar", corner_radius=0, height=50, fg_color="#333333", hover_color="#272727", image=eye_image, anchor="w")
 
+        calculo_label = customtkinter.CTkLabel(
+            self.painel, text="Calculo Frete", height=35)
+
+        calcular_frete = customtkinter.CTkButton(
+            self.painel, text="Calcular", corner_radius=0, height=50, fg_color="#333333", hover_color="#272727", image=eye_image, anchor="w")
+
         label_transp.pack()
         cadastrar_transp.pack()
         editar_transp.pack()
@@ -125,10 +165,12 @@ class App(customtkinter.CTk):
         cadastrar_produto.pack()
         editar_produto.pack()
         visualizar_produto.pack()
+        calculo_label.pack()
+        calcular_frete.pack()
 
         self.main_frame = customtkinter.CTkFrame(
             self, width=700, height=450, fg_color='#313131')
-        self.main_frame.grid(row=0, column=1, padx=30, pady=20, ipadx=10)
+        self.main_frame.grid(row=0, column=1, padx=15, pady=15, ipadx=10)
 
     def EditarTransportadoraScreen(self):
         self.delete_pages()
@@ -393,14 +435,46 @@ class App(customtkinter.CTk):
                                                    height=30,  width=100, fg_color="#3d9336", hover_color="#51bc48", command=self.atualizar_transportadora)
         button_atualizar.grid(row=6, column=5, pady=20)
 
+        button_apagar = customtkinter.CTkButton(self.main_frame, text="Deletar", corner_radius=7,
+                                                height=30, text_color='black',  width=100, fg_color="#ff1a1a", hover_color="#ff0000", command=self.deletar_transportadora, image=self.trash_image)
+        button_apagar.grid(row=6, column=0, pady=20, padx=20)
+
+    def deletar_transportadora(self):
+        try:
+            choice.append(self.choice)
+            if self.deletar_screen is None or not self.deletar_screen.winfo_exists():
+                # create window if its None or destroyed
+                self.deletar_screen = DeleterTransportadora(self)
+            else:
+                self.deletar_screen.focus()
+            self.clear_all_entries()
+        except:
+            if self.cadastro_fail is None or not self.cadastro_fail.winfo_exists():
+                # create window if its None or destroyed
+                self.cadastro_fail = CadastroFail(self)
+            else:
+                self.cadastro_fail.focus()
+
     def atualizar_transportadora(self):
+        try:
+            name_key = get_db(
+                DbLink().PATHS['1'], find_key_by_name=self.choice)
 
-        name_key = get_db(DbLink().PATHS['1'], find_key_by_name=self.choice)
-
-        patch_db(DbLink().PATHS['1']+'/'+name_key,
-                 self.convert_json('ID', 'nome'))
-        self.clear_all_entries()
-        self.nome_.set('-')
+            patch_db(DbLink().PATHS['1']+'/'+name_key,
+                     self.convert_json('ID', 'nome'))
+            self.clear_all_entries()
+            self.nome_.set('-')
+            if self.cadastro_sucess is None or not self.cadastro_sucess.winfo_exists():
+                # create window if its None or destroyed
+                self.cadastro_sucess = CadastroSucess(self)
+            else:
+                self.cadastro_fail.focus()
+        except:
+            if self.cadastro_fail is None or not self.cadastro_fail.winfo_exists():
+                # create window if its None or destroyed
+                self.cadastro_fail = CadastroFail(self)
+            else:
+                self.cadastro_fail.focus()
 
     def cadastro_transportadora(self):
         self.delete_pages()
@@ -651,16 +725,27 @@ class App(customtkinter.CTk):
         button_importar.grid(row=6, column=0, pady=20, padx=30)
 
     def importar_dados(self):
-        file_path = filedialog.askopenfilename(
-            filetypes=[("Arquivos de excel", "*.xlsx")])
+        try:
+            file_path = filedialog.askopenfilename(
+                filetypes=[("Arquivos de excel", "*.xlsx")])
 
-        dados, data_json, padrao_dados = get_excel_rows(
-            file_path), {}, [key for key in DbLink().PADRAO_DADOS.keys()]
-
-        for lista in dados:
-            for i in range(len(lista)):
-                data_json[padrao_dados[i]] = lista[i]
-            post_db(DbLink().PATHS['1'], data_json)
+            dados, data_json = get_excel_rows(file_path), {}
+            padrao_dados = [key for key in DbLink().PADRAO_DADOS.keys()]
+            for lista in dados:
+                for i in range(len(lista)):
+                    data_json[padrao_dados[i]] = lista[i]
+                post_db(DbLink().PATHS['1'], data_json)
+            if self.cadastro_sucess is None or not self.cadastro_sucess.winfo_exists():
+                # create window if its None or destroyed
+                self.cadastro_sucess = CadastroSucess(self)
+            else:
+                self.cadastro_sucess.focus()  # if window exists focus it
+        except:
+            if self.cadastro_fail is None or not self.cadastro_fail.winfo_exists():
+                # create window if its None or destroyed
+                self.cadastro_fail = CadastroFail(self)
+            else:
+                self.cadastro_fail.focus()
 
     def cadastrar_transportadora(self):
 
