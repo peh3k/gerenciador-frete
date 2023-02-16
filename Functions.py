@@ -5,6 +5,31 @@ import matplotlib.pyplot as plt
 
 class DbLink():
     URL_DB = 'https://frete-calculator-default-rtdb.firebaseio.com/'
+    PADRAO_DADOS = {
+        "ID": 00,
+        "nome": '',
+        "peso inicial": '',
+        "peso final": '',
+        "cep inicial": '',
+        "cep final": '',
+        "prazo": '',
+        "estado": '',
+        "cidade": '',
+        "regiao": '',
+        "valor frete": '',
+        "frete min": '',
+        "tac": '',
+        "gris": '',
+        "advalorem": '',
+        "pedagio": '',
+        "tas": '',
+        "icms": '',
+        "outros": '',
+    }
+
+    PATHS = {
+        "1": 'Transportadora'
+    }
 
 
 def post_db(path, dados):
@@ -33,6 +58,7 @@ def get_db(path, id=0, last=False, conflict=False, data=[], names=False, find_na
 
     if names:
         empresas = [requisicao.json()[nome]['nome'] for nome in requisicao.json() ]
+
         return empresas
 
     if len(find_name) > 0:
