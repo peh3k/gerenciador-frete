@@ -273,7 +273,7 @@ class App(customtkinter.CTk):
 
         bag_image = ImageTk.PhotoImage(Image.open(
             "images/bag.png").resize((20, 20)), Image.ANTIALIAS)
-        
+
         house_image = ImageTk.PhotoImage(Image.open(
             "images/house.png").resize((15, 15)), Image.ANTIALIAS)
 
@@ -288,7 +288,7 @@ class App(customtkinter.CTk):
         self.painel.grid(row=0, column=0)
 
         home_button = customtkinter.CTkButton(self.painel, text="Home", corner_radius=0, height=60,
-                                                   fg_color="#1a1a1a", hover_color="#272727", anchor="center", image=house_image, command=self.home_screen)
+                                              fg_color="#1a1a1a", hover_color="#272727", anchor="center", image=house_image, command=self.home_screen)
 
         label_transp = customtkinter.CTkLabel(
             self.painel, text="Transportadora", height=45)
@@ -338,14 +338,22 @@ class App(customtkinter.CTk):
         self.main_frame.grid_propagate(False)
 
         self.main_frame.place(anchor='center', relx=0.58, rely=0.5)
+        img = ImageTk.PhotoImage(Image.open(
+            "images/home.png").resize((700, 450)))
+
+        # Create a Label Widget to display the text or Image
+        label = customtkinter.CTkLabel(self.main_frame, text='', image=img)
+        label.pack()
 
     def home_screen(self):
         self.delete_pages()
-        img = ImageTk.PhotoImage(Image.open("images/home.png").resize((700, 450)))
+        img = ImageTk.PhotoImage(Image.open(
+            "images/home.png").resize((700, 450)))
 
         # Create a Label Widget to display the text or Image
-        label = customtkinter.CTkLabel(self.main_frame, text='', image = img)
+        label = customtkinter.CTkLabel(self.main_frame, text='', image=img)
         label.pack()
+
     def editar_produto_screen(self):
         self.delete_pages()
 
