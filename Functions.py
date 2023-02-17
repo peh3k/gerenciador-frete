@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 
 class DbLink():
     URL_DB = 'https://frete-calculator-default-rtdb.firebaseio.com/'
-    PADRAO_DADOS = {
+    PADRAO_DADOS = [
+        {
+        
         "ID": 00,
         "nome": '',
         "peso inicial": '',
@@ -24,11 +26,24 @@ class DbLink():
         "pedagio": '',
         "tas": '',
         "icms": '',
-        "outros": '',
-    }
+        "outros": ''
+        },{
+            "ID": 00,
+            "codigo interno": '',
+            "descricao": '',
+            "unidade": '',
+            "valor venda": '',
+            "peso": '',
+            "comprimento": '',
+            "largura": '',
+            "altura": ''
+        }
+    
+    ]
 
     PATHS = {
-        "1": 'Transportadora'
+        "1": 'Transportadora',
+        "2": 'Produto'
     }
 
 
@@ -46,9 +61,12 @@ def get_db(path, id=0, last=False, conflict=False, data=[], names=False, find_na
 
         return items
     if last:
-        items = [item for item in requisicao.json()]
+        try:
+            items = [item for item in requisicao.json()]
 
-        return requisicao.json()[items[-1]]['ID'] + 1
+            return requisicao.json()[items[-1]]['ID'] + 1
+        except: 
+            return 0
 
     if conflict:
         items = [requisicao.json()[item]['ID'] for item in requisicao.json()]
@@ -86,17 +104,35 @@ def delete_db(path):
     requests.delete(f'{DbLink().URL_DB}{path}/.json')
 
 
+def upload_massivo_db(file, padrao_dados, path):
 
+    rows = get_excel_rows(file)
+    keys_padrao = [i for i in DbLink().PADRAO_DADOS[padrao_dados]]
 
+    one_json_data, multiple_json_data = {}, []
 
+    for i in range(len(rows)):
+        for a in range(len(keys_padrao)):
+            one_json_data[keys_padrao[a]] = rows[i][a]
+        post_db(path, one_json_data)
 
+            
 
+def dicts_to_lists(dicts):
+    # Inicializa a lista de listas
+    result = []
+    # Pega as chaves do primeiro dicionário para definir a ordem dos valores
+    keys = list(dicts[0].keys())
+    # Adiciona a lista de chaves na lista de resultados
+    result.append(keys)
+    # Para cada dicionário na lista de dicionários
+    for d in dicts:
+        # Cria uma nova lista com os valores do dicionário na ordem das chaves
+        values = [d[key] for key in keys]
+        # Adiciona a lista de valores na lista de resultados
+        result.append(values)
 
-
-
-
-
-
+    return result
 
 
 
