@@ -90,7 +90,11 @@ def get_db(path, id=0, last=False, conflict=False, data=[], names=False, find_na
         return key[0]
 
     return requisicao.json()
+def find_key_by_code(path, codigo):
+    requisicao = requests.get(f'{DbLink().URL_DB}/{path}/.json')
+    key = [chave for chave in requisicao.json() if requisicao.json()[chave]['codigo interno'] == codigo]
 
+    return key[0]
 def get_excel_rows(excel_file):
     # Ler o arquivo do Excel com pandas
     df = pd.read_excel(excel_file)
@@ -133,8 +137,6 @@ def dicts_to_lists(dicts):
         result.append(values)
 
     return result
-
-
 
 
 

@@ -7,52 +7,55 @@ from Functions import *
 from tkinter import filedialog
 choice = []
 padrao_dados = [key for key in DbLink().PADRAO_DADOS[1].keys()]
+
+
 def criar_tabela(frame, colunas, linhas):
-        bg_colors = ["white", "gray"]
-        frame_tabela = ttk.Frame(frame)
-        frame_tabela.pack(fill='both', expand=True)
-        style = ttk.Style()
-        style.configure("Custom.Treeview", highlightthickness=0,
-                        bd=2, relief="groove")
-        # cria a lista de colunas e linhas
+    bg_colors = ["white", "gray"]
+    frame_tabela = ttk.Frame(frame)
+    frame_tabela.pack(fill='both', expand=True)
+    style = ttk.Style()
+    style.configure("Custom.Treeview", highlightthickness=0,
+                    bd=2, relief="groove")
+    # cria a lista de colunas e linhas
 
-        # define o objeto Treeview
-        tree = ttk.Treeview(frame_tabela, style="Custom.Treeview",
-                            columns=colunas, show='headings')
+    # define o objeto Treeview
+    tree = ttk.Treeview(frame_tabela, style="Custom.Treeview",
+                        columns=colunas, show='headings')
 
-        # define o nome das colunas
-        for col in colunas:
-            tree.heading(col, text=col)
+    # define o nome das colunas
+    for col in colunas:
+        tree.heading(col, text=col)
 
-        for a in linhas:
-            tree.insert('', 'end', values=a)
+    for a in linhas:
+        tree.insert('', 'end', values=a)
 
-        # configura as colunas para se ajustarem à largura dos dados
-        for col in colunas:
-            tree.column(col, width=130, anchor='center')
+    # configura as colunas para se ajustarem à largura dos dados
+    for col in colunas:
+        tree.column(col, width=130, anchor='center')
 
-        # verifica se o número de colunas é maior que a largura da janela
-        if len(colunas) > 1:
-            # cria um scrollbar horizontal
-            hsb = ttk.Scrollbar(
-                frame_tabela, orient='horizontal', command=tree.xview)
-            hsb.pack(side='bottom', fill='x')
-            tree.configure(xscrollcommand=hsb.set)
+    # verifica se o número de colunas é maior que a largura da janela
+    if len(colunas) > 1:
+        # cria um scrollbar horizontal
+        hsb = ttk.Scrollbar(
+            frame_tabela, orient='horizontal', command=tree.xview)
+        hsb.pack(side='bottom', fill='x')
+        tree.configure(xscrollcommand=hsb.set)
 
-        # cria um scrollbar vertical
-        vsb = ttk.Scrollbar(
-            frame_tabela, orient='vertical', command=tree.yview)
-        vsb.pack(side='right', fill='y')
-        tree.configure(yscrollcommand=vsb.set)
-        tree.tag_configure("white", background="white")
-        tree.tag_configure("gray", background="gray")
+    # cria um scrollbar vertical
+    vsb = ttk.Scrollbar(
+        frame_tabela, orient='vertical', command=tree.yview)
+    vsb.pack(side='right', fill='y')
+    tree.configure(yscrollcommand=vsb.set)
+    tree.tag_configure("white", background="white")
+    tree.tag_configure("gray", background="gray")
 
-        # Aplicar as cores de fundo às linhas da tabela
-        for i, item in enumerate(tree.get_children()):
-            bg_color = bg_colors[i % len(bg_colors)]
-            tree.item(item, tags=(bg_color,))
-        # adiciona a tabela e configura o layout
-        tree.pack(fill='both', expand=True)
+    # Aplicar as cores de fundo às linhas da tabela
+    for i, item in enumerate(tree.get_children()):
+        bg_color = bg_colors[i % len(bg_colors)]
+        tree.item(item, tags=(bg_color,))
+    # adiciona a tabela e configura o layout
+    tree.pack(fill='both', expand=True)
+
 
 class TabelaTransportadora(customtkinter.CTkToplevel):
     def __init__(self, *args, **kwargs):
@@ -63,7 +66,7 @@ class TabelaTransportadora(customtkinter.CTkToplevel):
         # obter as dimensões da tela
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-        
+
         # calcular as coordenadas x e y da janela
         x = (screen_width // 2) - (width // 2) + 60
         y = (screen_height // 2) - (height // 2) - 25
@@ -76,7 +79,7 @@ class TabelaTransportadora(customtkinter.CTkToplevel):
         get = get_db('Transportadora')
         list_dict = [get[item] for item in get]
         padrao = [item for item in DbLink().PADRAO_DADOS[0]]
-        
+
         new_list = []
         for a in range(len(get)):
             dict = {}
@@ -84,10 +87,10 @@ class TabelaTransportadora(customtkinter.CTkToplevel):
 
                 dict[padrao[i]] = list_dict[a][padrao[i]]
             new_list.append(dict)
-                
+
         all_dicts = dicts_to_lists(new_list)
         criar_tabela(self, colunas, all_dicts[1:])
-        
+
 
 class TabelaProdutos(customtkinter.CTkToplevel):
     def __init__(self, *args, **kwargs):
@@ -98,7 +101,7 @@ class TabelaProdutos(customtkinter.CTkToplevel):
         # obter as dimensões da tela
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-        
+
         # calcular as coordenadas x e y da janela
         x = (screen_width // 2) - (width // 2) + 60
         y = (screen_height // 2) - (height // 2) - 25
@@ -106,25 +109,24 @@ class TabelaProdutos(customtkinter.CTkToplevel):
         # definir a posição da janela
         self.geometry("{}x{}+{}+{}".format(width, height, x, y))
         self.title("Produtos")
-        
+
         colunas = [i for i in DbLink().PADRAO_DADOS[1].keys()]
         get = get_db('Produto')
         list_dict = [get[item] for item in get]
         padrao = [item for item in DbLink().PADRAO_DADOS[1]]
-        
+
         new_list = []
         for a in range(len(list_dict)):
             dict = {}
             for i in range(len(padrao)):
-                
+
                 dict[padrao[i]] = list_dict[a][padrao[i]]
 
             new_list.append(dict)
-            
 
-                
         all_dicts = dicts_to_lists(new_list)
         criar_tabela(self, colunas, all_dicts[1:])
+
 
 class DeleterTransportadora(customtkinter.CTkToplevel):
     def __init__(self, *args, **kwargs):
@@ -172,6 +174,23 @@ class CadastroSucess(customtkinter.CTkToplevel):
         self.destroy()
 
 
+class NaoEncontrado(customtkinter.CTkToplevel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.geometry("200x130")
+        self.title("Aviso")
+        self.label = customtkinter.CTkLabel(self, text="Não Encontrado!")
+        self.label.pack(padx=20, pady=20)
+
+        ok_button = customtkinter.CTkButton(self, text="OK", corner_radius=7, width=70,
+                                            height=30, fg_color="#df8110", hover_color="#ce770f",
+                                            command=self.fechar_janela)
+        ok_button.pack(padx=5, pady=5)
+
+    def fechar_janela(self):
+        self.destroy()
+
+
 class CadastroFail(customtkinter.CTkToplevel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -200,10 +219,12 @@ class App(customtkinter.CTk):
             ) if isinstance(child, customtkinter.CTkEntry)]
         return all_inputs
 
-    def convert_json(self, *ignore):
+    def convert_json(self, padrao_dados, inputs=[], *ignore):
         all_inputs = self.get_all_inputs(get=True)
+        if len(inputs) > 0:
+            all_inputs = inputs
         padrao_dados = [key for key in DbLink(
-        ).PADRAO_DADOS[0] if key not in ignore]
+        ).PADRAO_DADOS[padrao_dados] if key not in ignore]
         data_json = {}
         for i in range(len(all_inputs)):
             data_json[padrao_dados[i]] = all_inputs[i]
@@ -239,6 +260,7 @@ class App(customtkinter.CTk):
         self.deletar_screen = None
         self.tabela_transportadora = None
         self.tabela_produto = None
+        self.nao_encontrado = None
 
         truck_image = ImageTk.PhotoImage(Image.open(
             "images/truck.png").resize((20, 20)), Image.ANTIALIAS)
@@ -251,13 +273,22 @@ class App(customtkinter.CTk):
 
         bag_image = ImageTk.PhotoImage(Image.open(
             "images/bag.png").resize((20, 20)), Image.ANTIALIAS)
+        
+        house_image = ImageTk.PhotoImage(Image.open(
+            "images/house.png").resize((15, 15)), Image.ANTIALIAS)
 
         self.trash_image = ImageTk.PhotoImage(Image.open(
             "images/trash.png").resize((15, 15)), Image.ANTIALIAS)
 
+        self.search_image = ImageTk.PhotoImage(Image.open(
+            "images/search.png").resize((15, 15)), Image.ANTIALIAS)
+
         self.painel = customtkinter.CTkFrame(
             self, height=550, width=180, fg_color="#262527")
         self.painel.grid(row=0, column=0)
+
+        home_button = customtkinter.CTkButton(self.painel, text="Home", corner_radius=0, height=60,
+                                                   fg_color="#1a1a1a", hover_color="#272727", anchor="center", image=house_image, command=self.home_screen)
 
         label_transp = customtkinter.CTkLabel(
             self.painel, text="Transportadora", height=45)
@@ -278,7 +309,7 @@ class App(customtkinter.CTk):
             self.painel, text="Cadastrar", corner_radius=0, height=50, fg_color="#333333", hover_color="#272727", image=bag_image, anchor="w", command=self.cadastro_produto_screen)
 
         editar_produto = customtkinter.CTkButton(self.painel, text="Editar", corner_radius=0,
-                                                 height=50, fg_color="#333333", hover_color="#272727", image=pencil_image, anchor="w")
+                                                 height=50, fg_color="#333333", hover_color="#272727", image=pencil_image, anchor="w", command=self.editar_produto_screen)
 
         visualizar_produto = customtkinter.CTkButton(
             self.painel, text="Visualizar", corner_radius=0, height=50, fg_color="#333333", hover_color="#272727", image=eye_image, anchor="w", command=self.view_tabela_produto)
@@ -289,6 +320,7 @@ class App(customtkinter.CTk):
         calcular_frete = customtkinter.CTkButton(
             self.painel, text="Calcular", corner_radius=0, height=50, fg_color="#333333", hover_color="#272727", image=eye_image, anchor="w")
 
+        home_button.pack()
         label_transp.pack()
         cadastrar_transp.pack()
         editar_transp.pack()
@@ -304,10 +336,184 @@ class App(customtkinter.CTk):
             self, width=700, height=450, fg_color='#313131')
         self.main_frame.grid(row=0, column=1, padx=15, pady=15, ipadx=10)
         self.main_frame.grid_propagate(False)
+
+        self.main_frame.place(anchor='center', relx=0.58, rely=0.5)
+
+    def home_screen(self):
+        self.delete_pages()
+        img = ImageTk.PhotoImage(Image.open("images/home.png").resize((700, 450)))
+
+        # Create a Label Widget to display the text or Image
+        label = customtkinter.CTkLabel(self.main_frame, text='', image = img)
+        label.pack()
+    def editar_produto_screen(self):
+        self.delete_pages()
+
+        self.codigo_interno = customtkinter.CTkEntry(self.main_frame,
+                                                     width=85,
+                                                     height=25,
+                                                     border_width=1,
+                                                     corner_radius=1,
+                                                     )
+        self.descricao = customtkinter.CTkEntry(self.main_frame,
+                                                width=200,
+                                                height=25,
+                                                border_width=1,
+                                                corner_radius=1,
+                                                )
+        self.unidade = customtkinter.CTkEntry(self.main_frame,
+                                              width=85,
+                                              height=25,
+                                              border_width=1,
+                                              corner_radius=1,
+                                              )
+        self.valor_venda = customtkinter.CTkEntry(self.main_frame,
+                                                  width=85,
+                                                  height=25,
+                                                  border_width=1,
+                                                  corner_radius=1,
+                                                  )
+        self.peso = customtkinter.CTkEntry(self.main_frame,
+                                           width=85,
+                                           height=25,
+                                           border_width=1,
+                                           corner_radius=1,
+                                           )
+        self.comprimento = customtkinter.CTkEntry(self.main_frame,
+                                                  width=85,
+                                                  height=25,
+                                                  border_width=1,
+                                                  corner_radius=1,
+                                                  )
+        self.largura = customtkinter.CTkEntry(self.main_frame,
+                                              width=85,
+                                              height=25,
+                                              border_width=1,
+                                              corner_radius=1,
+                                              )
+        self.altura = customtkinter.CTkEntry(self.main_frame,
+                                             width=85,
+                                             height=25,
+                                             border_width=1,
+                                             corner_radius=1,
+                                             )
+        label_codigo = customtkinter.CTkLabel(
+            self.main_frame,
+            text="Código:"
+
+        )
+        label_descricao = customtkinter.CTkLabel(
+            self.main_frame,
+            text="Descrição:"
+
+        )
+        label_unidade = customtkinter.CTkLabel(
+            self.main_frame,
+            text="Unidade:"
+
+        )
+        label_valor_venda = customtkinter.CTkLabel(
+            self.main_frame,
+            text="Valor Venda:"
+
+        )
+        label_peso = customtkinter.CTkLabel(
+            self.main_frame,
+            text="Peso:"
+
+        )
+        label_comprimento = customtkinter.CTkLabel(
+            self.main_frame,
+            text="Comprimento:"
+
+        )
+        label_largura = customtkinter.CTkLabel(
+            self.main_frame,
+            text="largura:"
+
+        )
+        label_altura = customtkinter.CTkLabel(
+            self.main_frame,
+            text="Altura:"
+        )
+
+        label_codigo.grid(row=0, column=2, pady=20, padx=30)
+        label_descricao.grid(row=3, column=2, pady=20, padx=30)
+        label_unidade.grid(row=1, column=2, pady=20, padx=30)
+        label_valor_venda.grid(row=2, column=2, pady=20, padx=30)
+        label_peso.grid(row=0, column=4, pady=20, padx=30)
+        label_comprimento.grid(row=1, column=4, pady=20, padx=30)
+        label_largura.grid(row=2, column=4, pady=20, padx=30)
+        label_altura.grid(row=3, column=4, pady=20, padx=30)
+
+        self.codigo_interno.grid(row=0, column=3, pady=20)
+        self.descricao.grid(row=3, column=3, pady=20)
+        self.unidade.grid(row=1, column=3, pady=20)
+        self.valor_venda.grid(row=2, column=3, pady=20)
+        self.peso.grid(row=0, column=5, pady=20)
+        self.comprimento.grid(row=1, column=5, pady=20)
+        self.largura.grid(row=2, column=5, pady=20)
+        self.altura.grid(row=3, column=5, pady=20)
+
+        button_atualizar = customtkinter.CTkButton(self.main_frame, text="Atualizar", corner_radius=7,
+                                                   height=30,  width=100, fg_color="#3d9336", hover_color="#51bc48", command=self.atualizar_produto)
+        button_atualizar.grid(row=4, column=5, pady=20)
+
+        button_cada = customtkinter.CTkButton(self.main_frame, image=self.search_image, text="", corner_radius=7,
+                                              height=30,  width=20, fg_color="#808080", hover_color="#666666", command=self.is_product_exists)
+        button_cada.grid(row=0, column=1, padx=20)
+
+    def atualizar_produto(self):
+        inputs = self.get_all_inputs(get=True)
+        dict = self.convert_json(1, inputs[1:], 'ID', 'codigo interno')
+
+        text = self.codigo_interno.get()
+        name_key = find_key_by_code(
+            DbLink().PATHS['2'], int(text))
+        try:
+
+            patch_db(DbLink().PATHS['2']+'/'+name_key, dict)
+            self.clear_all_entries()
+
+            if self.cadastro_sucess is None or not self.cadastro_sucess.winfo_exists():
+                # create window if its None or destroyed
+                self.cadastro_sucess = CadastroSucess(self)
+            else:
+                self.cadastro_fail.focus()
+        except:
+            if self.cadastro_fail is None or not self.cadastro_fail.winfo_exists():
+                # create window if its None or destroyed
+                self.cadastro_fail = CadastroFail(self)
+            else:
+                self.cadastro_fail.focus()
+
+    def is_product_exists(self):
+        texto = self.codigo_interno.get()
+        dados_json = get_db(DbLink().PATHS['2'])
+        dados_list = [dados_json[item] for item in dados_json]
+        all_entries = self.get_all_inputs()
+        padrao = [item for item in DbLink().PADRAO_DADOS[1]
+                  if item not in ['ID']]
+        achou = 0
+        for item in dados_list:
+            if int(texto) == item['codigo interno']:
+                self.clear_all_entries()
+                achou += 1
+                for i in range(len(all_entries)):
+                    all_entries[i].insert(0, item[padrao[i]])
+
+        if achou == 0:
+            self.clear_all_entries()
+            if self.nao_encontrado is None or not self.nao_encontrado.winfo_exists():
+                # create window if its None or destroyed
+                self.nao_encontrado = NaoEncontrado(self)
+            else:
+                self.nao_encontrado.focus()  # if window exists focus it
+
     def view_tabela_produto(self):
         if self.tabela_produto is None or not self.tabela_produto.winfo_exists():
-                # create window if its None or destroyed
-                self.tabela_produto = TabelaProdutos(self)
+            # create window if its None or destroyed
+            self.tabela_produto = TabelaProdutos(self)
         else:
             self.tabela_produto.focus()  # if window exists focus it
 
@@ -471,7 +677,6 @@ class App(customtkinter.CTk):
                 self.cadastro_fail.focus()
 
     def VisualizarTranspScreen(self):
-        self.delete_pages()
 
         if self.tabela_transportadora is None or not self.tabela_transportadora.winfo_exists():
             # create window if its None or destroyed
@@ -767,7 +972,7 @@ class App(customtkinter.CTk):
                 DbLink().PATHS['1'], find_key_by_name=self.choice)
 
             patch_db(DbLink().PATHS['1']+'/'+name_key,
-                     self.convert_json('ID', 'nome'))
+                     self.convert_json(0, 'ID', 'nome'))
             self.clear_all_entries()
             self.nome_.set('-')
             if self.cadastro_sucess is None or not self.cadastro_sucess.winfo_exists():
