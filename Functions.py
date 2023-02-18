@@ -2,6 +2,7 @@ import requests
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
+import openpyxl
 
 class DbLink():
     URL_DB = 'https://frete-calculator-default-rtdb.firebaseio.com/'
@@ -137,6 +138,28 @@ def dicts_to_lists(dicts):
         result.append(values)
 
     return result
+
+
+def criar_tabela_excel(nomes_colunas, linhas, nome_arquivo):
+    # Cria um novo arquivo XLSX
+    workbook = openpyxl.Workbook()
+    # Seleciona a planilha ativa
+    sheet = workbook.active
+    # Define as colunas com os nomes da lista nomes_colunas
+    for coluna, nome_coluna in enumerate(nomes_colunas):
+        # A primeira coluna em Excel é "A", portanto, adicionamos 1 ao índice da coluna
+        sheet.cell(row=1, column=coluna+1, value=nome_coluna)
+    # Define as linhas com os valores da lista linhas
+    for linha, valores_linha in enumerate(linhas):
+        for coluna, valor in enumerate(valores_linha):
+            # A primeira linha em Excel é "1", portanto, adicionamos 2 ao índice da linha
+            sheet.cell(row=linha+2, column=coluna+1, value=valor)
+    # Salva o arquivo com o nome especificado
+    workbook.save(nome_arquivo)
+
+
+
+  
 
 
 
