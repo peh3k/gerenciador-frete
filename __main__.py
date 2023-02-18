@@ -67,6 +67,16 @@ class TabelaTransportadora(customtkinter.CTkToplevel):
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
 
+        downloadimage = ImageTk.PhotoImage(Image.open(
+            "images/download.png").resize((15, 15)), Image.ANTIALIAS)
+        button = customtkinter.CTkButton(
+            self, text='Baixar', image=downloadimage, width=30, command=self.baixar_tabela)
+        button.pack(side="bottom", pady=10)
+
+        self.baixado_screen = None
+        self.baixado_fail = None
+
+
         # calcular as coordenadas x e y da janela
         x = (screen_width // 2) - (width // 2) + 60
         y = (screen_height // 2) - (height // 2) - 25
@@ -91,6 +101,23 @@ class TabelaTransportadora(customtkinter.CTkToplevel):
         all_dicts = dicts_to_lists(new_list)
         criar_tabela(self, colunas, all_dicts[1:])
 
+    def baixar_tabela(self):
+        try:
+            dados = get_db('Transportadora')
+            lista = [dados[item] for item in dados]
+            padrao = [item for item in DbLink().PADRAO_DADOS[0]]
+            nova_lista = [list(item.values()) for item in lista]
+            padrao.sort()
+            criar_tabela_excel(padrao, nova_lista,
+                               'Tabela_Transportadoras.xlsx')
+            if self.baixado_screen is None or not self.baixado_screen.winfo_exists():
+                # create window if its None or destroyed
+                self.baixado_screen = BaixadoSucesso(self)
+        except:
+            if self.baixado_fail is None or not self.baixado_fail.winfo_exists():
+                # create window if its None or destroyed
+                self.baixado_fail = CadastroFail(self)
+
 
 class TabelaProdutos(customtkinter.CTkToplevel):
     def __init__(self, *args, **kwargs):
@@ -101,6 +128,15 @@ class TabelaProdutos(customtkinter.CTkToplevel):
         # obter as dimensões da tela
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
+
+        self.baixado_screen = None
+        self.baixado_fail = None
+
+        downloadimage = ImageTk.PhotoImage(Image.open(
+            "images/download.png").resize((15, 15)), Image.ANTIALIAS)
+        button = customtkinter.CTkButton(
+            self, text='Baixar', image=downloadimage, width=30, command=self.baixar_tabela)
+        button.pack(side="bottom", pady=10)
 
         # calcular as coordenadas x e y da janela
         x = (screen_width // 2) - (width // 2) + 60
@@ -127,6 +163,23 @@ class TabelaProdutos(customtkinter.CTkToplevel):
         all_dicts = dicts_to_lists(new_list)
         criar_tabela(self, colunas, all_dicts[1:])
 
+    def baixar_tabela(self):
+        try:
+            dados = get_db('Produto')
+            lista = [dados[item] for item in dados]
+            padrao = [item for item in DbLink().PADRAO_DADOS[1]]
+            nova_lista = [list(item.values()) for item in lista]
+            padrao.sort()
+            criar_tabela_excel(padrao, nova_lista, 'Tabela_Produtos.xlsx')
+
+            if self.baixado_screen is None or not self.baixado_screen.winfo_exists():
+                # create window if its None or destroyed
+                self.baixado_screen = BaixadoSucesso(self)
+        except:
+            if self.baixado_fail is None or not self.baixado_fail.winfo_exists():
+                # create window if its None or destroyed
+                self.baixado_fail = CadastroFail(self)
+
 
 class DeleterTransportadora(customtkinter.CTkToplevel):
     def __init__(self, *args, **kwargs):
@@ -151,6 +204,29 @@ class DeleterTransportadora(customtkinter.CTkToplevel):
         delete_db(DbLink().PATHS['1']+'/'+key)
 
         self.destroy()
+
+    def fechar_janela(self):
+        self.destroy()
+
+
+class BaixadoSucesso(customtkinter.CTkToplevel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.geometry("200x130")
+  
+
+        # definir a posição da janela
+
+        self.title("Aviso")
+        self.label = customtkinter.CTkLabel(
+            self, text="Baixado com Sucesso!")
+        self.label.pack(padx=20, pady=20)
+
+        ok_button = customtkinter.CTkButton(self, text="OK", corner_radius=7, width=70,
+                                            height=30, fg_color="#df8110", hover_color="#ce770f",
+                                            command=self.fechar_janela)
+        ok_button.pack(padx=5, pady=5)
 
     def fechar_janela(self):
         self.destroy()
@@ -294,43 +370,46 @@ class App(customtkinter.CTk):
             self.painel, text="Transportadora", height=45)
 
         cadastrar_transp = customtkinter.CTkButton(self.painel, text="Cadastrar", corner_radius=0, height=60,
-                                                   fg_color="#333333", hover_color="#272727", anchor="w", image=truck_image, command=self.cadastro_transportadora)
+                                                   fg_color="#333333", hover_color="#272727", anchor="center", image=truck_image, command=self.cadastro_transportadora)
 
         editar_transp = customtkinter.CTkButton(self.painel, text="Editar", corner_radius=0,
-                                                height=60, fg_color="#333333", hover_color="#272727", anchor="w", command=self.EditarTransportadoraScreen, image=pencil_image)
+                                                height=60, fg_color="#333333", hover_color="#272727", anchor="center", command=self.EditarTransportadoraScreen, image=pencil_image)
 
         visualizar_transp = customtkinter.CTkButton(
-            self.painel, text="Visualizar", corner_radius=0, height=50, fg_color="#333333", hover_color="#272727", image=eye_image, anchor="w", command=self.VisualizarTranspScreen)
+            self.painel, text="Visualizar", corner_radius=0, height=50, fg_color="#333333", hover_color="#272727", image=eye_image, anchor="center", command=self.VisualizarTranspScreen)
 
         produto_label = customtkinter.CTkLabel(
             self.painel, text="Produto", height=35)
 
         cadastrar_produto = customtkinter.CTkButton(
-            self.painel, text="Cadastrar", corner_radius=0, height=50, fg_color="#333333", hover_color="#272727", image=bag_image, anchor="w", command=self.cadastro_produto_screen)
+            self.painel, text="Cadastrar", corner_radius=0, height=50, fg_color="#333333", hover_color="#272727", image=bag_image, anchor="center", command=self.cadastro_produto_screen)
 
         editar_produto = customtkinter.CTkButton(self.painel, text="Editar", corner_radius=0,
-                                                 height=50, fg_color="#333333", hover_color="#272727", image=pencil_image, anchor="w", command=self.editar_produto_screen)
+                                                 height=50, fg_color="#333333", hover_color="#272727", image=pencil_image, anchor="center", command=self.editar_produto_screen)
 
         visualizar_produto = customtkinter.CTkButton(
-            self.painel, text="Visualizar", corner_radius=0, height=50, fg_color="#333333", hover_color="#272727", image=eye_image, anchor="w", command=self.view_tabela_produto)
+            self.painel, text="Visualizar", corner_radius=0, height=50, fg_color="#333333", hover_color="#272727", image=eye_image, anchor="center", command=self.view_tabela_produto)
 
         calculo_label = customtkinter.CTkLabel(
             self.painel, text="Calculo Frete", height=35)
 
         calcular_frete = customtkinter.CTkButton(
-            self.painel, text="Calcular", corner_radius=0, height=50, fg_color="#333333", hover_color="#272727", image=eye_image, anchor="w")
+            self.painel, text="Calcular", corner_radius=0, height=50, fg_color="#333333", hover_color="#272727", image=eye_image, anchor="center")
 
         home_button.pack()
         label_transp.pack()
         cadastrar_transp.pack()
-        editar_transp.pack()
+        
         visualizar_transp.pack()
+        editar_transp.pack()
         produto_label.pack()
         cadastrar_produto.pack()
-        editar_produto.pack()
         visualizar_produto.pack()
+        editar_produto.pack()
+        
         calculo_label.pack()
         calcular_frete.pack()
+        
 
         self.main_frame = customtkinter.CTkFrame(
             self, width=700, height=450, fg_color='#313131')
