@@ -3,42 +3,43 @@ import json
 import pandas as pd
 import matplotlib.pyplot as plt
 import openpyxl
-
+import teste
+import tkinter as tk
+from tkinter import ttk
 class DbLink():
     URL_DB = 'https://frete-calculator-default-rtdb.firebaseio.com/'
     PADRAO_DADOS = [
-        {
-        
-        "ID": 00,
-        "nome": '',
-        "peso inicial": '',
-        "peso final": '',
-        "cep inicial": '',
-        "cep final": '',
-        "prazo": '',
-        "estado": '',
-        "cidade": '',
-        "regiao": '',
-        "valor frete": '',
-        "frete min": '',
-        "tac": '',
-        "gris": '',
-        "advalorem": '',
-        "pedagio": '',
-        "tas": '',
-        "icms": '',
-        "outros": ''
-        },{
-            "ID": 00,
-            "codigo interno": '',
-            "descricao": '',
-            "unidade": '',
-            "valor venda": '',
-            "peso": '',
-            "comprimento": '',
-            "largura": '',
-            "altura": ''
-        }
+    [
+        "ID",
+        "nome",
+        "peso inicial",
+        "peso final",
+        "cep inicial",
+        "cep final",
+        "prazo",
+        "estado",
+        "cidade",
+        "regiao",
+        "valor frete",
+        "frete min",
+        "tac",
+        "gris",
+        "advalorem",
+        "pedagio",
+        "tas",
+        "icms",
+        "outros"
+        ], [
+            "ID",
+            "codigo interno",
+            "descricao",
+            "unidade",
+            "valor venda",
+            "peso",
+            "comprimento",
+            "largura",
+            "altura"
+        ]
     
     ]
 
@@ -46,6 +47,7 @@ class DbLink():
         "1": 'Transportadora',
         "2": 'Produto'
     }
+    
 
 
 def post_db(path, dados):
@@ -91,6 +93,9 @@ def get_db(path, id=0, last=False, conflict=False, data=[], names=False, find_na
         return key[0]
 
     return requisicao.json()
+
+
+
 def find_key_by_code(path, codigo):
     requisicao = requests.get(f'{DbLink().URL_DB}/{path}/.json')
     key = [chave for chave in requisicao.json() if requisicao.json()[chave]['codigo interno'] == codigo]
@@ -109,19 +114,17 @@ def delete_db(path):
     requests.delete(f'{DbLink().URL_DB}{path}/.json')
 
 
-def upload_massivo_db(file, padrao_dados, path):
+def upload_massivo_db(file, path):
+    rows_excel = get_excel_rows(file)
+    todos_valores = get_db(path)
+    values = [value for value in todos_valores.values()]
+    only_ids = [item_[0] for item_interno in values for item_ in item_interno]
+    dados_unicos = [dado for dado in rows_excel if dado[0] not in only_ids], [dado for dado in rows_excel if dado[0] in only_ids]
 
-    rows = get_excel_rows(file)
-    keys_padrao = [i for i in DbLink().PADRAO_DADOS[padrao_dados]]
+    post_db(path, dados_unicos[0])
 
-    one_json_data, multiple_json_data = {}, []
-
-    for i in range(len(rows)):
-        for a in range(len(keys_padrao)):
-            one_json_data[keys_padrao[a]] = rows[i][a]
-        post_db(path, one_json_data)
-
-            
+    return dados_unicos[1]
+    
 
 def dicts_to_lists(dicts):
     # Inicializa a lista de listas
@@ -157,10 +160,53 @@ def criar_tabela_excel(nomes_colunas, linhas, nome_arquivo):
     # Salva o arquivo com o nome especificado
     workbook.save(nome_arquivo)
 
+def criar_tabela(frame, colunas, linhas):
+    bg_colors = ["white", "gray"]
+    frame_label = ttk.Frame(frame)
+    frame_tabela = ttk.Frame(frame)
+    frame_tabela.pack(fill='both', expand=True)
+    style = ttk.Style()
+    style.configure("Custom.Treeview", highlightthickness=0,
+                    bd=2, relief="groove")
+    # cria a lista de colunas e linhas
 
+    # define o objeto Treeview
+    tree = ttk.Treeview(frame_tabela, style="Custom.Treeview",
+                        columns=colunas, show='headings')
 
-  
+    # define o nome das colunas
+    for col in colunas:
+        tree.heading(col, text=col)
 
+    for a in linhas:
+        tree.insert('', 'end', values=a)
+
+    # configura as colunas para se ajustarem à largura dos dados
+    for col in colunas:
+        tree.column(col, width=130, anchor='center')
+
+    # verifica se o número de colunas é maior que a largura da janela
+    if len(colunas) > 1:
+        # cria um scrollbar horizontal
+        hsb = ttk.Scrollbar(
+            frame_tabela, orient='horizontal', command=tree.xview)
+        hsb.pack(side='bottom', fill='x')
+        tree.configure(xscrollcommand=hsb.set)
+
+    # cria um scrollbar vertical
+    vsb = ttk.Scrollbar(
+        frame_tabela, orient='vertical', command=tree.yview)
+    vsb.pack(side='right', fill='y')
+    tree.configure(yscrollcommand=vsb.set)
+    tree.tag_configure("white", background="white")
+    tree.tag_configure("gray", background="gray")
+
+    # Aplicar as cores de fundo às linhas da tabela
+    for i, item in enumerate(tree.get_children()):
+        bg_color = bg_colors[i % len(bg_colors)]
+        tree.item(item, tags=(bg_color,))
+    # adiciona a tabela e configura o layout
+    tree.pack(fill='both', expand=True)
 
 
 
