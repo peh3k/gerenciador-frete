@@ -1,17 +1,18 @@
-from tkinter import *
-from tkinter import filedialog
+import tkinter as tk
+from customtkinter import CTkProgressBar
 
-# Cria a janela
-root = Tk()
+class ProgressBar(tk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+        self.progress_bar = CTkProgressBar(self)
+        self.progress_bar.pack()
 
-# Função para abrir o gerenciador de arquivos
-def open_file():
-    file_path = filedialog.askopenfilename()
-    print(file_path)
+    
 
-# Cria o botão e adiciona-o à janela
-button = Button(root, text="Abrir arquivo", command=open_file)
-button.pack()
+# Exemplo de uso:
+        
+        
 
-# Inicia o loop principal da GUI
-root.mainloop()
+        
+
+

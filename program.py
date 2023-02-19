@@ -3,15 +3,15 @@ from PIL import ImageTk, Image
 from tkinter import filedialog
 from Functions import *
 import logging
-
+import tkinter as tk
 
 # Variaveis globais importantes de busca
 
 global PADRAO_TRANSPORTADORA, PADRAO_PRODUTO, PATH_PRODUTO, PATH_TRANSPORTADORA
 
-PATH_TRANSPORTADORA = DbLink().PATHS['1']
+PATH_TRANSPORTADORA = DbLink().PATHS[0]
 PADRAO_TRANSPORTADORA = DbLink().PADRAO_DADOS[0]
-PATH_PRODUTO = DbLink().PATHS['2']
+PATH_PRODUTO = DbLink().PATHS[1]
 PADRAO_PRODUTO = DbLink().PADRAO_DADOS[1]
 
 
@@ -64,6 +64,18 @@ class ErroInesperadoPopup(customtkinter.CTkToplevel):
     def fechar_janela(self):
         self.destroy()
 
+class ItemExistente(customtkinter.CTkToplevel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.geometry("200x130")
+        self.title("Aviso")
+        header_label = customtkinter.CTkLabel(
+            self, text="Item Já Existente!").pack(padx=20, pady=20)
+        ok_button = customtkinter.CTkButton(self, text="OK", corner_radius=7, width=70, height=30,
+                                            fg_color="#df8110", hover_color="#ce770f", command=self.fechar_janela).pack(padx=5, pady=5)
+
+    def fechar_janela(self):
+        self.destroy()
 
 class MainFrame(customtkinter.CTkFrame):
     def __init__(self, master):
@@ -79,7 +91,7 @@ class PainelLateral(customtkinter.CTkFrame):
 class Home(customtkinter.CTkFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
         # Imagem da tela inicial
         img = ImageTk.PhotoImage(Image.open(
             "images/home.png").resize((700, 480)))
@@ -92,7 +104,7 @@ class CadastroTransportadoraScreen(customtkinter.CTkFrame):
         super().__init__(*args, **kwargs)
 
         # Widgets da tela
-        
+
         label_nome = customtkinter.CTkLabel(self, text="Nome:").grid(
             row=0, column=0, pady=20, padx=10)
         self.nome = customtkinter.CTkEntry(
@@ -174,29 +186,64 @@ class CadastroTransportadoraScreen(customtkinter.CTkFrame):
         # Fim dos widgets
 
     # Métodos da tela de cadastro de transportadoras
+    
+    # Pegar todos os textos dos inputs desse frame
+    def get_all_inputs_text(self):
+        all_inputs = [child.get() for child in self.winfo_children(
+        ) if isinstance(child, customtkinter.CTkEntry)]
+
+        return all_inputs
+    
+    # Zerar todos os inputs
+    def clear_all_entries(self):
+        for child in self.winfo_children():
+            if isinstance(child, customtkinter.CTkEntry):
+                child.delete(0, tk.END)
+    
     def importar_transportadoras_from_excel(self):
         file_path = filedialog.askopenfilename(
             filetypes=[("Arquivos de excel", "*.xlsx")])
         try:
-            upload_returned = upload_massivo_db(file_path, PATH_TRANSPORTADORA)
-            if len(upload_returned) > 0:
-                
-                # Chama popup da tabela
-                TabelaTransportadoraDuplicatasPopup(self, header=upload_returned)
-
-            CadastroSucessoPopup(self)
-        except:
-            logging.warning("Importar dados transportadora")
-            ErroInesperadoPopup(self)
             
-    def get_all_inputs_text(self):
-        all_inputs = [child.get() for child in self.winfo_children(
-            ) if isinstance(child, customtkinter.CTkEntry)]
-        
-        return all_inputs
-    
+            # Retorna os dados iguais e os dados únicos
+            upload_returned = upload_massivo_transportadora(file_path)
+            
+            # Caso tenha dados únicos exibe o popup de cadastro concluído, caso contrario exibe a tabela de duplicatas
+            if len(upload_returned[0]) > 0:
+                TabelaTransportadoraDuplicatasPopup(
+                    self, header=upload_returned[0])
+            if len(upload_returned[1]) > 0:
+                CadastroSucessoPopup(self)
+            if len(upload_returned[1]) == 0:
+                logging.warning('nao foi preciso o cadastro de nenhuma transportadora')
+        except:
+            logging.warning("Erro ao importar dados transportadora")
+            ErroInesperadoPopup(self)
+
     def cadastrar_transportadora_from_inputs(self):
-        print(self.get_all_inputs_text())
+        try:
+            text_entries = self.get_all_inputs_text()
+            
+            # Gera um loggin caso o usuario não digite o nome da empresa
+            if len(text_entries[0]) <= 0:
+                logging.warning('empresa sem nome')
+            
+            # Cadastra a transportadora
+            else:
+                new_text_entries = []
+                new_text_entries.append(text_entries)
+                dados_insert = list_to_dict(
+                    new_text_entries, PADRAO_TRANSPORTADORA[1:])
+                post_dados = post_db(PATH_TRANSPORTADORA, dados_insert, search_same=new_text_entries)
+                self.clear_all_entries()
+                if post_dados is not False:
+                    CadastroSucessoPopup(self)
+                else:
+                    ItemExistente(self)
+                    
+        except:
+            logging.warning('Cadastro manual transportadora')
+            ErroInesperadoPopup(self)
 
 
 class EditarTransportadoraScreen(customtkinter.CTkFrame):
@@ -278,7 +325,7 @@ class App(customtkinter.CTk):
         # Home de Entrada
         self.MAIN_HOME_SCREEN = Home(self.MAIN_FRAME)
         self.MAIN_HOME_SCREEN.pack()
-    
+
     def delete_pages(self):
         for frame in self.MAIN_FRAME.winfo_children():
             frame.destroy()

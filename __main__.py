@@ -1,10 +1,11 @@
 import customtkinter
 import tkinter as tk
 from tkinter import ttk
-
+from time import sleep
 from PIL import ImageTk, Image
 from Functions import *
 from tkinter import filedialog
+
 choice = []
 padrao_dados = [key for key in DbLink().PADRAO_DADOS[1].keys()]
 
@@ -338,6 +339,7 @@ class App(customtkinter.CTk):
         self.tabela_produto = None
         self.nao_encontrado = None
 
+
         truck_image = ImageTk.PhotoImage(Image.open(
             "images/truck.png").resize((20, 20)), Image.ANTIALIAS)
 
@@ -524,6 +526,8 @@ class App(customtkinter.CTk):
             text="Altura:"
         )
 
+       
+
         label_codigo.grid(row=0, column=2, pady=20, padx=30)
         label_descricao.grid(row=3, column=2, pady=20, padx=30)
         label_unidade.grid(row=1, column=2, pady=20, padx=30)
@@ -549,6 +553,8 @@ class App(customtkinter.CTk):
         button_cada = customtkinter.CTkButton(self.main_frame, image=self.search_image, text="", corner_radius=7,
                                               height=30,  width=20, fg_color="#808080", hover_color="#666666", command=self.is_product_exists)
         button_cada.grid(row=0, column=1, padx=20)
+
+        
 
     def atualizar_produto(self):
         inputs = self.get_all_inputs(get=True)
@@ -721,6 +727,9 @@ class App(customtkinter.CTk):
                                                   height=30,  width=100, fg_color="#df8110", hover_color="#ce770f", command=self.importar_dados_produto)
         button_importar.grid(row=4, column=2, pady=20, padx=30)
 
+        
+
+
     def cadastrar_produto(self):
         try:
             all_entries, padrao_dados, data_json = self.get_all_inputs(
@@ -745,23 +754,12 @@ class App(customtkinter.CTk):
                 self.cadastro_fail.focus()
 
     def importar_dados_produto(self):
-        try:
-            file_path = filedialog.askopenfilename(
+        
+        file_path = filedialog.askopenfilename(
                 filetypes=[("Arquivos de excel", "*.xlsx")])
+        
 
-            upload_massivo_db(file_path, 1, DbLink().PATHS['2'])
-
-            if self.cadastro_sucess is None or not self.cadastro_sucess.winfo_exists():
-                # create window if its None or destroyed
-                self.cadastro_sucess = CadastroSucess(self)
-            else:
-                self.cadastro_sucess.focus()  # if window exists focus it
-        except:
-            if self.cadastro_fail is None or not self.cadastro_fail.winfo_exists():
-                # create window if its None or destroyed
-                self.cadastro_fail = CadastroFail(self)
-            else:
-                self.cadastro_fail.focus()
+        upload_massivo_db(file_path, 1, DbLink().PATHS['2'])
 
     def VisualizarTranspScreen(self):
 
