@@ -4,11 +4,15 @@ from Frames.FramesDependences import *
 from Frames.MainFrame import MainFrame
 from Frames.CadastroTransportadora import CadastroTransportadoraScreen
 from Frames.Home import Home
+from Frames.TelaErro import ErroScreen
+from Frames.TelaErro2 import ErroScreenTabela
 from Frames.EditarTransportadora import EditarTransportadoraScreen
 from Frames.PainelLateral import PainelLateral
 from Frames.TabelaTransportadora import TabelaTransportadora
 from Frames.CadastroProduto import CadastroProdutoScreen
 from Frames.EditarProduto import EditarProdutoScreen
+from Frames.TabelaProduto import TabelaProduto
+
 
 
 class App(customtkinter.CTk):
@@ -51,7 +55,7 @@ class App(customtkinter.CTk):
             self.painel_lateral, text="Produto", height=35).pack()
         cadastrar_produto = customtkinter.CTkButton(self.painel_lateral, text="Cadastrar", corner_radius=0,
                                                     height=50, fg_color="#333333", hover_color="#272727", image=bag_image, anchor="center", command=self.cadastrar_produto_screen).pack()
-        visualizar_produto = customtkinter.CTkButton(self.painel_lateral, text="Visualizar", corner_radius=0,
+        visualizar_produto = customtkinter.CTkButton(self.painel_lateral, text="Visualizar", corner_radius=0, command=self.tabela_produto_screen,
                                                      height=50, fg_color="#333333", hover_color="#272727", image=eye_image, anchor="center").pack()
         editar_produto = customtkinter.CTkButton(self.painel_lateral, text="Editar", corner_radius=0,
                                                  height=50, fg_color="#333333", hover_color="#272727", image=pencil_image, anchor="center", command=self.editar_produto_screen).pack()
@@ -92,12 +96,20 @@ class App(customtkinter.CTk):
                 self.MAIN_FRAME)
             edicao_transportadora_screen.pack(ipadx=30, ipady=20)
         except:
-            home_screen = Home(self.MAIN_FRAME)
-            home_screen.pack()
+            erro_screen = ErroScreen(self.MAIN_FRAME)
+            erro_screen.pack()
     
     def tabela_transportadora_screen(self):
-        tabela_transportadora_screen = TabelaTransportadora(
-            self.MAIN_FRAME)
+        is_table_exisits = get_db(PATH_TRANSPORTADORA)
+        if is_table_exisits is not None:
+            tabela_transportadora_screen = TabelaTransportadora(
+                self.MAIN_FRAME)
+        else:
+            self.delete_pages()
+        
+            erro_screen = ErroScreenTabela(self.MAIN_FRAME)
+            erro_screen.pack()
+
     
     def cadastrar_produto_screen(self):
         self.delete_pages()
@@ -106,12 +118,36 @@ class App(customtkinter.CTk):
         cadastro_produto_screen.pack(ipadx=30, ipady=30, side="bottom")
         
     def editar_produto_screen(self):
-        self.delete_pages()
-        editar_produto_screen = EditarProdutoScreen(
-            self.MAIN_FRAME)
-        editar_produto_screen.pack(ipadx=30, ipady=30, side="bottom")
         
+        
+        is_table_exisits = get_db(PATH_PRODUTO)
+        if is_table_exisits is not None:
+            self.delete_pages()
+            
+            editar_produto_screen = EditarProdutoScreen(
+                self.MAIN_FRAME)
+            editar_produto_screen.pack(ipadx=30, ipady=30, side="bottom")
+        else:
+            self.delete_pages()
+        
+            erro_screen = ErroScreen(self.MAIN_FRAME)
+            erro_screen.pack()
 
+        
+    def tabela_produto_screen(self):
+        is_table_exisits = get_db(PATH_PRODUTO)
+        if is_table_exisits is not None:
+            tabela_produto_screen = TabelaProduto(
+                self.MAIN_FRAME)
+        else:
+            self.delete_pages()
+        
+            erro_screen = ErroScreenTabela(self.MAIN_FRAME)
+            erro_screen.pack()
+        
+            
+            
+        
 if __name__ == "__main__":
     app = App()
     app.mainloop()

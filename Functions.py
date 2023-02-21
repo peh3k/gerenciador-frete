@@ -184,12 +184,12 @@ def get_dict_from_name(table, name):
 
 
 
-
 def remover_nones(lista):
+    
     return list(filter(lambda x: x is not None, lista))
 
 
-
+print(get_db('Produto'))
         
 
     

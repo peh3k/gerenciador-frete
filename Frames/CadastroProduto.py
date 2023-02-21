@@ -63,6 +63,8 @@ class CadastroProdutoScreen(customtkinter.CTkFrame):
                 
     def cadastrar_produto(self):
         all_text = self.get_all_inputs_text()
+        
+        
         if len(all_text[0]) <= 0:
             logging.warning("Produto sem código")
             
@@ -171,10 +173,14 @@ class CadastroProdutoScreen(customtkinter.CTkFrame):
     
     def get_last_id(self, table):
         all_data = get_db(table)
-        jsons = {}
-        for key in all_data:
-            new_list = remover_nones(all_data[key])
-            jsons[key] = new_list
-        ids = [lista['ID'] for key in jsons for lista in jsons[key]]
         
-        return ids[-1]
+        try:
+            jsons = {}
+            for key in all_data:
+                new_list = remover_nones(all_data[key])
+                jsons[key] = new_list
+            ids = [lista['ID'] for key in jsons for lista in jsons[key]]
+            
+            return ids[-1]
+        except:
+            return 0

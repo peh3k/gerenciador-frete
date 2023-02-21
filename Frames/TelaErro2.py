@@ -1,11 +1,11 @@
 from Frames.FramesDependences import *
 
-class Home(customtkinter.CTkFrame):
+class ErroScreenTabela(customtkinter.CTkFrame):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # Imagem da tela inicial
         img = ImageTk.PhotoImage(Image.open(
-            "images/home.png"))
+            "images/ops_img_2.png"))
         label = customtkinter.CTkLabel(self, text='', image=img)
         label.pack()
