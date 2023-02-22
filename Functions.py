@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import openpyxl
 from tkinter import ttk
 import logging
+
 class DbLink():
     URL_DB = 'https://frete-calculator-default-rtdb.firebaseio.com/'
     PADRAO_DADOS = [
@@ -182,14 +183,12 @@ def get_dict_from_name(table, name):
     
     return same_name
 
-
-
 def remover_nones(lista):
     
     return list(filter(lambda x: x is not None, lista))
 
 
-print(get_db('Produto'))
+
         
 
     

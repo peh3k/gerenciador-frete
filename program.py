@@ -1,6 +1,4 @@
 from Frames.FramesDependences import *
-
-
 from Frames.MainFrame import MainFrame
 from Frames.CadastroTransportadora import CadastroTransportadoraScreen
 from Frames.Home import Home
@@ -22,7 +20,7 @@ class App(customtkinter.CTk):
         # Configurações gerais da janela
         customtkinter.set_appearance_mode("dark")
         self.title("Calculadora de Frete")
-        self.geometry("900x500")
+        self.geometry("950x540")
         self.resizable(False, False)
 
         """
@@ -44,7 +42,7 @@ class App(customtkinter.CTk):
         home_button = customtkinter.CTkButton(self.painel_lateral, text="Home", corner_radius=0, height=60,
                                               command=self.home_screen, fg_color="#1a1a1a", hover_color="#272727", anchor="center", image=house_image).pack()
         label_transp = customtkinter.CTkLabel(
-            self.painel_lateral, text="Transportadora", height=45)
+            self.painel_lateral, text="Transportadora", height=45).pack()
         cadastrar_transp = customtkinter.CTkButton(self.painel_lateral, text="Cadastrar", corner_radius=0, command=self.cadastro_transportadora_screen,
                                                    height=60, fg_color="#333333", hover_color="#272727", anchor="center", image=truck_image).pack()
         visualizar_transp = customtkinter.CTkButton(self.painel_lateral, text="Visualizar", corner_radius=0,
@@ -66,7 +64,7 @@ class App(customtkinter.CTk):
 
         # Frame Principal
         self.MAIN_FRAME = MainFrame(self)
-        self.MAIN_FRAME.pack(side='right', padx=30)
+        self.MAIN_FRAME.pack(pady=30)
         self.MAIN_FRAME.pack_propagate(False)
 
         # Home de Entrada
